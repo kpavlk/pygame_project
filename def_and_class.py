@@ -1,3 +1,4 @@
+import game
 from config_file.config_game import *
 
 from pynput.keyboard import Listener
@@ -12,7 +13,6 @@ cur = con.cursor()
 
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
-all_sprites = pygame.sprite.Group()
 sprite = pygame.sprite.Sprite()
 pygame.init()
 screen.fill(pygame.Color("white"))
@@ -102,56 +102,118 @@ def load_image(name, colorkey=None):
 
 
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, player_pos, name, speed, image_name, score, money, *group):
+    def __init__(self, player_pos, name, speed, image_name, score, money, tup, *group):
         super().__init__(*group)
-        self.image = load_image(image_name)
+        self.image = pygame.transform.scale(load_image(image_name), (38, 42))
         self.speed = speed
         self.name = name
         self.score = score
         self.money = money
+        self.tup = tup
         self.rect = self.image.get_rect()
-        self.rect.x = random.choice([random.randint(-200, 0), random.randint(width, width + 200)])
-        self.rect.y = random.choice([random.randint(-200, 0), random.randint(height, height + 200)])
-        self.string_rendered = font.render(self.name, False, (0, 0, 0))
-        self.textrect = self.string_rendered.get_rect(center=(self.image.get_rect().center[0],
-                                                              self.image.get_rect().center[1] + 30))
-        self.image.blit(self.string_rendered, self.textrect)
+        if self.tup == 0:
+            top = random.randint(0, 2)
+            if top:
+                self.rect.x = random.choice([random.randint(-200, 0), random.randint(width, width + 200)])
+                self.rect.y = random.randint(-200, height + 200)
+            else:
+                self.rect.x = random.randint(-200, width + 200)
+                self.rect.y = random.choice([random.randint(-200, 0), random.randint(height, height + 200)])
+        elif self.tup == 1:
+            self.rect.x = random.randint(-2000, 0)
+            self.rect.y = random.randint(0, height)
+        elif self.tup == 2:
+            self.rect.x = random.randint(0, width)
+            self.rect.y = random.randint(height, height + 2000)
+        elif self.tup == 3:
+            self.rect.x = random.randint(width, width + 2000)
+            self.rect.y = random.randint(0, height)
+        elif self.tup == 4:
+            self.rect.x = random.randint(0, width)
+            self.rect.y = random.randint(-2000, 0)
+        elif self.tup == 5:
+            qwe = random.randint(1, 5)
+            self.tup = qwe
+            if qwe == 1:
+                self.rect.x = random.randint(-2000, 0)
+                self.rect.y = random.randint(0, height)
+            elif qwe == 2:
+                self.rect.x = random.randint(0, width)
+                self.rect.y = random.randint(height, height + 2000)
+            elif qwe == 3:
+                self.rect.x = random.randint(width, width + 2000)
+                self.rect.y = random.randint(0, height)
+            elif qwe == 4:
+                self.rect.x = random.randint(0, width)
+                self.rect.y = random.randint(-2000, 0)
         self.distance = ((self.rect.x - player_pos[0]) ** 2 + (self.rect.y - player_pos[0]) ** 2) ** 0.5
 
     def update(self, player_pos, activ_word):
-        if abs(self.rect.x - player_pos[0]) > 50 or abs(self.rect.y - player_pos[1]) > 50:
-            k_x = (abs(self.rect.x - player_pos[0]) /
-                   ((abs(self.rect.x - player_pos[0]) + abs(self.rect.y - player_pos[1])) / 2))
-            k_y = (abs(self.rect.y - player_pos[1]) /
-                   ((abs(self.rect.x - player_pos[0]) + abs(self.rect.y - player_pos[1])) / 2))
-            if self.rect.x > player_pos[0] and self.rect.y > player_pos[1]:
-                self.rect.x -= self.speed * k_x
-                self.rect.y -= self.speed * k_y
-            elif self.rect.x > player_pos[0] and self.rect.y < player_pos[1]:
-                self.rect.x -= self.speed * k_x
-                self.rect.y += self.speed * k_y
-            elif self.rect.x < player_pos[0] and self.rect.y > player_pos[1]:
-                self.rect.x += self.speed * k_x
-                self.rect.y -= self.speed * k_y
-            else:
-                self.rect.x += self.speed * k_x
-                self.rect.y += self.speed * k_y
-            self.distance = ((self.rect.x - player_pos[0]) ** 2 + (self.rect.y - player_pos[0]) ** 2) ** 0.5
+        if self.tup == 0:
+            if abs(self.rect.x - player_pos[0]) > 50 or abs(self.rect.y - player_pos[1]) > 50:
+                k_x = (abs(self.rect.x - player_pos[0]) /
+                       ((abs(self.rect.x - player_pos[0]) + abs(self.rect.y - player_pos[1])) / 2))
+                k_y = (abs(self.rect.y - player_pos[1]) /
+                       ((abs(self.rect.x - player_pos[0]) + abs(self.rect.y - player_pos[1])) / 2))
+                if self.rect.x > player_pos[0] and self.rect.y > player_pos[1]:
+                    self.rect.x -= self.speed * k_x
+                    self.rect.y -= self.speed * k_y
+                elif self.rect.x > player_pos[0] and self.rect.y < player_pos[1]:
+                    self.rect.x -= self.speed * k_x
+                    self.rect.y += self.speed * k_y
+                elif self.rect.x < player_pos[0] and self.rect.y > player_pos[1]:
+                    self.rect.x += self.speed * k_x
+                    self.rect.y -= self.speed * k_y
+                else:
+                    self.rect.x += self.speed * k_x
+                    self.rect.y += self.speed * k_y
+                self.distance = ((self.rect.x - player_pos[0]) ** 2 + (self.rect.y - player_pos[0]) ** 2) ** 0.5
+        elif self.tup == 1:
+            self.rect.x += self.speed
+        elif self.tup == 2:
+            self.rect.y -= self.speed
+        elif self.tup == 3:
+            self.rect.x -= self.speed
+        elif self.tup == 4:
+            self.rect.y += self.speed
         if activ_word == self.name:
+            print(self.name + "qwerty")
             self.kill()
+            print(-1)
             change_score(self.score)
             change_money(self.money)
 
 
-def generate(n_s, n_m, n_l):
-    new_enemy = all_sprites
-    for _ in range(n_s):
-        Enemy((960, 540), random.choice(word_s), 1,
-              "enemy/m_type_s.png", 30, 15,  new_enemy)
-    for _ in range(n_m):
-        Enemy((960, 540), random.choice(word_m), 1,
-              "enemy/m_type_m.png", 60, 30, new_enemy)
-    for _ in range(n_l):
-        Enemy((960, 540), random.choice(word_l), 1,
-              "enemy/m_type_l.png", 100, 50, new_enemy)
+def generate(n, tup):
+    new_enemy = pygame.sprite.Group()
+    if tup == 0:
+        let = random.choices(letters, k=n)
+        for i in range(n):
+            Enemy((960, 540), let[i], 1,
+                  f"enemy/{let[i]}/tile000.png", 30, 15, tup, new_enemy)
+    elif tup == 1:
+        let = random.choices(letters, k=n)
+        for i in range(n):
+            Enemy((960, 540), let[i], 3,
+                  f"enemy/{let[i]}/tile000.png", 30, 15, tup, new_enemy)
+    elif tup == 2:
+        let = random.choices(letters, k=n)
+        for i in range(n):
+            Enemy((960, 540), let[i], 3,
+                  f"enemy/{let[i]}/tile000.png", 30, 15, tup, new_enemy)
+    elif tup == 3:
+        let = random.choices(letters, k=n)
+        for i in range(n):
+            Enemy((960, 540), let[i], 3,
+                  f"enemy/{let[i]}/tile000.png", 30, 15, tup, new_enemy)
+    elif tup == 4:
+        let = random.choices(letters, k=n)
+        for i in range(n):
+            Enemy((960, 540), let[i], 3,
+                  f"enemy/{let[i]}/tile000.png", 30, 15, tup, new_enemy)
+    elif tup == 5:
+        let = random.choices(letters, k=n)
+        for i in range(n):
+            Enemy((960, 540), let[i], 3,
+                  f"enemy/{let[i]}/tile000.png", 30, 15, tup, new_enemy)
     return new_enemy

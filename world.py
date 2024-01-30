@@ -15,7 +15,7 @@ class World:
     def setup(self):
         self.player = Player("player", (self.surface.get_size()[0] // 2, self.surface.get_size()[1] // 2), self.all_sprites)
         self.player_in_room = Player("m_type_l", (self.surface.get_size()[0] // 2, self.surface.get_size()[1] // 2), self.room_sprites)
-        self.shop = Shop((960, 802.8))
+        self.shop = Shop((1270, 802.8))
 
     def create(self, t):
         self.surface.fill("black")

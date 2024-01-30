@@ -38,25 +38,21 @@ class Game:
             self.world.player_in_room.pos = (960, 802.8)
             self.settings = False
         self.screen.fill((0, 0, 0))
+        #print(self.world.player_in_room.pos)
+        print(self.world.shop.check_distance(self.world.player_in_room.pos))
         background = pygame.image.load("data/images/room.jpg")
         self.screen.blit(background, (0, 0))
         self.world.room_sprites.draw(self.screen)
-        if self.world.shop.handle_collide(self.world.player_in_room.pos):
-            self.world.shop.show_menu()
+        keys = pygame.key.get_pressed()
+        self.world.shop.handle_collide(self.world.player_in_room.pos)
         pygame.display.update()
         pygame.display.flip()
-
-
-    def x(self, q):
-        global activ, act_word
-        activ = True
-        act_word = q
 
     def generate_enemies(self):
         if self.gen:
             for sprite in self.enemy_sprites:
                 sprite.kill()
-            self.enemy_sprites.add(generate(5, 5, 5))
+            self.enemy_sprites.add(generate(5, 5))
             self.gen = False
 
     def start_game(self):
@@ -121,10 +117,16 @@ class Game:
                     act_word = ""
                     data = []
                     for i in self.enemy_sprites.sprites():
-                        data.append((i.name, i.distance, self.x))
+                        data.append((i.name, i.distance, x))
                     keyboard.set_active_words(data)
                 self.enemy_sprites.draw(self.screen)
                 if self.world.timer <= 0:
                     self.state = "home"
             pygame.display.flip()
             pygame.display.update()
+
+
+def x(q):
+    global activ, act_word
+    activ = True
+    act_word = q
