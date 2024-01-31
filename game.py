@@ -7,6 +7,7 @@ from config_file.config_game import *
 from world import World
 import sqlite3
 
+activ, act_word = True, ""
 
 class Game:
     def __init__(self):
@@ -35,16 +36,16 @@ class Game:
 
     def draw_home(self):
         if self.settings:
-            self.world.player_in_room.pos = (960, 802.8)
+            self.world.player_in_room.pos = (self.screen.get_size()[0] / 2, 615)
             self.settings = False
         self.screen.fill((0, 0, 0))
         #print(self.world.player_in_room.pos)
-        print(self.world.shop.check_distance(self.world.player_in_room.pos))
         background = pygame.image.load("data/images/room.jpg")
         self.screen.blit(background, (0, 0))
         self.world.room_sprites.draw(self.screen)
         keys = pygame.key.get_pressed()
         self.world.shop.handle_collide(self.world.player_in_room.pos)
+        self.world.player.speed = 400 * self.world.shop.get_upgrade_level()[0]
         pygame.display.update()
         pygame.display.flip()
 
@@ -56,6 +57,7 @@ class Game:
             self.gen = False
 
     def start_game(self):
+        global activ, act_word
         keyboard = Keyboard()
         data = []
         activ = True
@@ -83,17 +85,7 @@ class Game:
 
             if self.state == "home":
                 self.draw_home()
-                if 260 <= self.world.player_in_room.pos[0] and self.world.player_in_room.pos[1] == 802.8:
-                    self.world.player_in_room.update(t)
-                else:
-                    self.world.player_in_room.pos[0] += 2
-                    self.world.player_in_room.pos[1] = 802.8
-
-                if self.world.player_in_room.pos[0] <= 1659.6 and self.world.player_in_room.pos[1] == 802.8:
-                    self.world.player.update(t)
-                else:
-                    self.world.player_in_room.pos[0] -= 2
-                    self.world.player_in_room.pos[1] = 802.8
+                self.world.player_in_room.update(t)
 
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_ESCAPE]:
@@ -108,7 +100,9 @@ class Game:
             if self.state == "game":
                 # Создание мира, отрисовка спрайтов и карты
                 self.world.create(t)
+
                 self.generate_enemies()
+
                 if pygame.mouse.get_focused():
                     self.enemy_sprites.update(self.world.player.pos, act_word)
                 if activ:
@@ -117,16 +111,17 @@ class Game:
                     act_word = ""
                     data = []
                     for i in self.enemy_sprites.sprites():
-                        data.append((i.name, i.distance, x))
+                        data.append((i.name, i.distance, self.x))
                     keyboard.set_active_words(data)
                 self.enemy_sprites.draw(self.screen)
+
                 if self.world.timer <= 0:
                     self.state = "home"
+
             pygame.display.flip()
             pygame.display.update()
 
-
-def x(q):
-    global activ, act_word
-    activ = True
-    act_word = q
+    def x(self, q):
+        global activ, act_word
+        activ = True
+        act_word = q

@@ -27,14 +27,14 @@ def change_score(delta_score):
     score = list(cur.execute('SELECT * FROM player_stats').fetchone())
     score[0] += delta_score
     cur.execute('Delete from player_stats')
-    cur.execute('Insert into player_stats (score, money) values (?, ?)', score)
+    cur.execute('Insert into player_stats (score, money, night) values (?, ?, ?)', score)
 
 
 def change_money(delta_money):
     money = list(cur.execute('SELECT * FROM player_stats').fetchone())
     money[1] += delta_money
     cur.execute('Delete from player_stats')
-    cur.execute('Insert into player_stats (score, money) values (?, ?)', money)
+    cur.execute('Insert into player_stats (score, money, night) values (?, ?, ?)', money)
 
 
 class Keyboard:
@@ -104,7 +104,7 @@ def load_image(name, colorkey=None):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, player_pos, name, speed, image_name, score, money, tup, *group):
         super().__init__(*group)
-        self.image = pygame.transform.scale(load_image(image_name), (38, 42))
+        self.image = pygame.transform.scale(load_image(image_name), (76, 84))
         self.speed = speed
         self.name = name
         self.score = score
@@ -132,7 +132,7 @@ class Enemy(pygame.sprite.Sprite):
             self.rect.x = random.randint(0, width)
             self.rect.y = random.randint(-2000, 0)
         elif self.tup == 5:
-            qwe = random.randint(1, 5)
+            qwe = random.randint(1, 4)
             self.tup = qwe
             if qwe == 1:
                 self.rect.x = random.randint(-2000, 0)
@@ -182,6 +182,9 @@ class Enemy(pygame.sprite.Sprite):
             print(-1)
             change_score(self.score)
             change_money(self.money)
+        self.distance = ((self.rect.x - player_pos[0]) ** 2 + (self.rect.y - player_pos[0]) ** 2) ** 0.5
+        if self.rect[0] == 0:
+            print(self.tup)
 
 
 def generate(n, tup):

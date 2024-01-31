@@ -13,13 +13,12 @@ class World:
 
 
     def setup(self):
-        self.player = Player("player", (self.surface.get_size()[0] // 2, self.surface.get_size()[1] // 2), self.all_sprites)
-        self.player_in_room = Player("m_type_l", (self.surface.get_size()[0] // 2, self.surface.get_size()[1] // 2), self.room_sprites)
+        self.player = Player("game_player", (self.surface.get_size()[0] // 2, self.surface.get_size()[1] // 2), self.all_sprites, self.surface.get_size(), 5)
+        self.player_in_room = Player("human/0", (self.surface.get_size()[0] // 2, self.surface.get_size()[1] // 2), self.room_sprites, self.surface.get_size(), 8, True)
         self.shop = Shop((1270, 802.8))
 
     def create(self, t):
         self.surface.fill("black")
-        self.surface.blit(self.player.image, (0, 0))
         self.all_sprites.draw(self.surface)
         self.all_sprites.update(t)
         self.update_timer()
